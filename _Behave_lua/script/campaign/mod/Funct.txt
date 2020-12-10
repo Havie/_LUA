@@ -1,0 +1,494 @@
+	
+--Might be able to Enable proxy wars for other factions
+model:enable_diplomacy("faction:3k_main_faction_cao_cao", "subculture:3k_main_chinese", "treaty_components_attitude_manipulation_positive,treaty_components_attitude_manipulation_negative,treaty_components_instigate_proxy_war_proposer", "hidden")
+
+model:enable_diplomacy("faction:3k_main_faction_cao_cao", "subculture:3k_main_chinese", "treaty_components_attitude_manipulation_positive,treaty_components_attitude_manipulation_negative,treaty_components_instigate_proxy_war_proposer", "hidden")
+model:enable_diplomacy("faction:3k_main_faction_cao_cao", "subculture:3k_dlc05_subculture_bandits", "treaty_components_attitude_manipulation_positive,treaty_components_attitude_manipulation_negative,treaty_components_instigate_proxy_war_proposer", "hidden")
+
+--Disabling faction specific counter-proposal treaties for their respective factions - Han Chinese
+model:disable_diplomacy("faction:3k_main_faction_cao_cao", "subculture:3k_main_chinese","treaty_components_instigate_proxy_war_recipient", "hidden")
+
+
+
+----------------------------------------------------
+---- Kills an invasion via the invasion manager ----
+----------------------------------------------------
+function invasion_manager:kill_invasion_by_key(key)	
+	local invasion = self.invasions[key];
+	
+	if invasion then
+		self:print("Invasion Manager: Killing Invasion [" .. invasion.key .. "]");
+		invasion:kill();
+	end
+end
+
+
+global_event:new(
+
+--Look into global events over instances
+core:trigger_event("LuBuRebels") -- if Lu Bu successfully spawns, fire the associated global events
+
+
+if sun_ce_character:is_faction_leader() then
+						cdir_events_manager:kill_faction_leader(sun_ce_character:faction():name());
+					else
+						cdir_events_manager:kill_startpos_character( "1283665913", false );
+					end	
+
+
+		if turn_number == 1 then
+			--Set the turn_number for when Sun Ce is supose to die. Randomness ensures small variaty between playthoughs.
+			if not context:faction():is_human() then
+				cm:set_saved_value("SunCeLifeSpawn", 35+cm:random_number(0,4),"SunCeAILife")
+			else
+				cm:set_saved_value("SunCeLifeSpawn", -1,"SunCeAILife")
+			end
+
+cm:force_declare_war(self.faction, self.target_faction, self.event_feed_suppressed);
+ core:trigger_event("ScriptEventSunCeIntroductionMission03Complete")
+
+--Performant use of maps instead of elseifs --------
+-- can just look faction keys up in maps, guess its like hashing
+"If the faction isn’t in our table, then the “if” statement will be nil, which doesn’t proceed. If the faction is there, we will proceed and fire off the mechanic. Now, no matter how many factions we want our mechanic to use, we’ll only be looping once in a single player game, and twice in an MP game. For a mechanic which launches once or twice, that’s the ideal number."
+
+local my_mechanic_factions = {
+        ["wh_main_emp_empire"] = true,
+        ]"wh_main_emp_brt_bretonnia"] = true
+    }
+
+ local humans = cm:get_human_factions()
+    for i = 1, #humans do
+        local current_human = humans[i]
+        if my_mechanic_factions[current_human] then
+            my_mechanic(current_human)
+        end
+    end
+
+--Bonus i guess if my_mechanic_factions is a local global?
+function does_faction_have_my_mechanic(faction_key)
+        return (my_mechanic_factions[faction_key] and cm:get_faction(faction_key):is_human() 
+end
+
+-----------------------------------------------------
+grant_unit_to_character (wh)
+local mf_cqi = context:character():military_force():command_queue_index()
+    
+    cm:grant_unit_to_character(char_lookup_str, "tutorial_big_bat")
+    cm:apply_effect_bundle_to_force("tutorial_free_hair", mf_cqi, 5)
+
+
+
+
+--Can print the skill panel 
+core:add_listener(
+		"dismiss_advice_on_post_battle_screen_closure",
+		"PanelClosedCampaign",
+		true,
+		function(context)
+			local panel_name = context.string;
+			if panel_list[panel_name] then
+				out("* dismissing advice as panel " .. panel_name .. " is closing");
+				cm:wait_for_model_sp(
+					function()
+						cm:dismiss_advice() 
+					end
+				);
+			end;
+		end,
+		true
+	);
+
+--BINGO
+
+if not self.all_whitelists_disabled then
+		core:add_listener(
+			"character_selected_whitelist",
+			"CharacterSelected",
+			true,
+			function(context)		
+				local character_selected = context:character();
+				
+				if not self:find_character_selection_whitelist(character_selected:cqi()) then
+					CampaignUI.ClearSelection();
+				end;
+			end,
+	
+		true
+
+"CharacterDeselected",
+
+	-- settlement selected
+	core:add_listener(
+		"campaign_selection_listener",
+		"SettlementSelected",
+		true,
+		function(settlement_selected_context) 
+			local settlement = "settlement:" .. settlement_selected_context:settlement():region():name();
+			out.ui("Settlement selected " .. settlement);
+			
+			self.settlement_selected = settlement;
+			self.character_selected = "";
+			self.character_selected_faction = "";
+		end,
+		true
+	);
+	
+
+---Post-battle effects---
+-------------------------
+	core:add_listener(
+        "CharacterPostBattleEnslaveLuBu",
+        "CharacterPostBattleEnslave",
+		function(context)
+			return context:query_character():faction():name() == "3k_main_faction_lu_bu"
+		end,
+    function(context)
+        context:modify_character():replenish_action_points()
+		end,
+    true
+	);
+
+core:add_listener(
+		"player_stance_monitor",
+		"ForceAdoptsStance",
+		true,
+		function(context)
+			local mf = context:military_force();
+			local stance = tostring(context:stance_adopted());
+			
+			-- out("ForceAdoptsStance event triggered, stance is " .. tostring(stance) .. " [" .. mf:active_stance() .. "]");
+			
+			if mf:faction():name() == local_faction then				
+				if stance == "1" then
+					-- march
+					effect.set_advice_history_string_seen("march_stance");
+					effect.set_advice_history_string_seen("has_adopted_stance");
+				elseif stance == "2" then
+					-- ambush
+					effect.set_advice_history_string_seen("ambush_stance");
+					effect.set_advice_history_string_seen("has_adopted_stance");
+				elseif stance == "3" then
+					-- raiding
+					effect.set_advice_history_string_seen("raiding_stance");
+					effect.set_advice_history_string_seen("has_adopted_stance");
+				end;
+			
+			else
+				-- fire an event if the force is raiding the player's territory
+				if stance == "3" or stance == "14" then				
+					if mf:has_general() then
+						local char = mf:general_character();
+						if char:has_region() then
+							local owning_faction = char:region():owning_faction();
+							if not owning_faction:is_null_interface() and owning_faction:name() == local_faction then
+								core:trigger_event("ForceRaidingPlayerTerritory", mf);
+							end;
+						end;
+					end;
+				end;
+			end;
+		end,
+		true
+	);
+
+
+
+
+-- First Character Executed (Dong Zhuo)
+function commentary_events:setup_first_character_executed_trigger(event_key, faction_key)
+	core:add_listener(
+		event_key, -- Unique handle
+		"CharacterCaptiveOptionApplied", -- Campaign Event to listen for
+		function(context) -- Criteria
+			return context:capturing_force():faction():name() == faction_key and context:captive_option_outcome() == "EXECUTE";
+		end,
+		function(context) -- What to do if listener fires.
+			cdir_events_manager:print("COMMENTARY EVENT - Character Executed [" .. faction_key .. "]");
+			self:fire_incident(event_key, faction_key);
+		end,
+		true --Is persistent
+	);
+end;
+
+
+
+
+-- The UI sends a message to the system. Which will then fire missions.
+    core:add_listener(
+        "faction_council_invoke_council_listener", -- UID
+        "ModelScriptNotificationEvent", -- Event
+        function(model_script_notification_event) --"invoke_council"
+            if model_script_notification_event:event_id() ~= "invoke_council" then
+                return false;
+            end
+
+            return self:can_trigger_council(model_script_notification_event:faction());
+        end, --Conditions for firing
+		function(model_script_notification_event)
+            self:on_invoke_council( model_script_notification_event:faction(), model_script_notification_event:modify_model() );
+        end, -- Function to fire.
+        true -- Is Persistent?
+    );
+
+
+
+--[[
+function in_post_battle_defeated_advice_trigger()
+	local listener_str = "in_post_battle_defeated_advice";
+
+	-- if the player closes post-battle options immediately then just complete
+	core:add_listener(
+		listener_str,
+		"PanelClosedCampaign",
+		function(context) return context.string == "pre_battle_screen" end,
+		function()
+			in_post_battle_defeated_advice:complete();
+			cm:remove_callback(listener_str) 
+		end,
+		false
+	);
+		
+	cm:os_clock_callback(
+		function()
+			core:remove_listener(listener_str);
+			in_post_battle_defeated_advice_play();
+		end,
+		1,
+		listener_str
+	);
+end;
+
+function in_ambush_defence_advice_trigger()
+	local listener_str = "in_ambush_defence_advice";
+	
+	-- if the player closes panel immediately then just complete
+	core:add_listener(
+		listener_str,
+		"PanelClosedCampaign",
+		function(context) return context.string == "pre_battle_screen" end,
+		function()
+			cm:remove_callback(listener_str);
+			in_ambush_defence_advice:complete();
+		end,
+		false
+	);
+	
+	cm:callback(
+		function()
+			core:remove_listener(listener_str);
+			in_ambush_defence_advice_play();
+		end,
+		0.5,
+		listener_str
+	);
+end;
+
+
+
+function misc.rebel_armies:effect_bundle_activation_listener()
+	core:add_listener(
+		"RebelArmiesEffectBundleActivationListener",
+		"MilitaryForceCreated",
+		function(context) 
+			return not context:military_force_created():is_null_interface() and context:military_force_created():faction():is_rebel();
+		end,
+		function(context) 
+			local modify_force = cm:modify_military_force(context:military_force_created());
+			local force_cqi = context:military_force_created():command_queue_index();
+
+			modify_force:apply_effect_bundle("3k_dlc04_effect_bundle_rebel_force", 0);
+			modify_force:start_mustering(); -- Restarting mustering as bonuses are calculated when the force spawns.
+
+			out.design("[561] rebel forces effect bundle - Force cqi [" .. tostring( force_cqi ) .. "] granted rebel effect bundle.");
+		end,
+		true
+	);
+end;
+
+
+-Can use these to set an artifical time limit on council missions:
+
+
+	-- Listen for a council mission being generated and add it to the list of missions.
+    core:add_listener(
+        "faction_council_mission_issued_listener", -- UID
+        "MissionIssued", -- Event
+        function(mission_issued_event)
+            return self:is_council_mission(mission_issued_event:mission());
+        end, --Conditions for firing
+        function(mission_issued_event)
+			self:add_to_active_list(mission_issued_event:mission());
+        end, -- Function to fire.
+        true -- Is Persistent?
+    );
+
+
+	-- Listen for a council mission being cancelled and remove it from our list.
+    core:add_listener(
+        "faction_council_mission_cancelled_listener", -- UID
+        "MissionCancelled", -- Event
+        function(mission_cancelled_event)
+            return self:is_council_mission(mission_cancelled_event:mission());
+        end, --Conditions for firing
+        function(mission_cancelled_event)
+            self:remove_from_active_list(mission_cancelled_event:mission());
+        end, -- Function to fire.
+        true -- Is Persistent?
+    );
+
+
+
+
+Search more into this key "_gong_du_joins", "
+
+-- If the player chooses for Gong Du to join them
+core:add_listener(
+	local_faction_key, --faction_key
+	success_key .. "_gong_du_joins", -- Campaign Event to listen for
+	true,
+	function() -- What to do if listener fires.
+		cm:modify_faction(local_faction_key):remove_effect_bundle("3k_dlc04_mission_payload_zhang_bao_gong_du_dummy")
+		cm:modify_faction(local_faction_key):create_character_from_template("general", "3k_general_wood", "3k_ytr_template_historical_gong_du_hero_wood", true);
+	end,
+	false --Is persistent
+);
+
+this too
+core:add_listener(
+	local_faction_key .. "hired_thief",
+	success_key .. "hired_thief",
+	true,
+	function()
+		cao_cao_check_crime_fought();
+	end,
+	false
+)
+
+core:add_listener(
+	local_faction_key, -- Unique handle
+	"DLC04_Events_LiuBei_HorseMerchants", -- Campaign Event to listen for
+	true,
+	function(context) -- What to do if listener fires.
+		core:add_listener(
+			local_faction_key, -- Unique handle
+			"FactionCeoAdded", -- Campaign Event to listen for
+			function(context) -- Criteria
+				--Criteria Test
+				return context:ceo():ceo_data_key() == "3k_main_ancillary_weapon_shuang_gu_jian_faction"
+			end,
+			function(context) -- What to do if listener fires.
+				local q_char = cm:query_model():character_for_template(template_liu_bei);
+				if q_char and not q_char:is_null_interface() then
+					ancillaries:equip_ceo_on_character( q_char, "3k_main_ancillary_weapon_shuang_gu_jian_faction", "3k_main_ceo_category_ancillary_weapon" )
+				end;
+			end,
+			false --Is persistent
+		);
+
+--kinda cool
+ancillaries:equip_ceo_on_character( q_char, "3k_main_ancillary_weapon_shuang_gu_jian_faction", "3k_main_ceo_category_ancillary_weapon" )
+	
+
+--different event type?
+-- Initialise the chain.
+core:add_listener(
+	local_faction_key, -- Unique handle
+	"FactionTurnStart", -- Campaign Event to listen for
+	function(context) -- Criteria
+		return cdir_mission_manager:get_turn_number() == 3 and context:faction():name() == local_faction_key;
+	end,
+	function(context) -- What to do if listener fires.
+		core:trigger_event("3k_dlc04_tutorial_liu_bei_heros_journey_start");
+	end,
+	false --Is persistent
+);
+
+--triggers mission with liu bei
+core:trigger_event("3k_dlc05_lu_bu_liu_bei_mission")
+
+
+
+--OTHER diplo
+cm:force_declare_war("3k_dlc04_faction_rebels", "3k_main_faction_han_empire", true);
+cm:grant_military_access(local_faction_key, "3k_dlc04_faction_lu_zhi", true);
+
+global_events_manager:trigger_global_event_from_string("peach_garden_00");
+
+		model:enable_diplomacy("faction:3k_main_faction_lu_bu", "faction:3k_main_faction_liu_biao", "treaty_components_vassalise_proposer_liu_biao", "hidden")
+
+
+--No idea what this really is
+"FactionCeoNodeChanged", -- Campaign Event to listen for
+
+
+
+	core:add_listener(
+		"dlc05_lu_bu_death_blow_monitor", -- Unique handle
+		"FactionDied", -- Campaign Event to listen for
+		function(context) -- Criteria
+			if context:faction():name()=="3k_main_faction_lu_bu" and
+			   context:killer_or_confederator_faction_key()=="3k_main_faction_liu_bei" then
+		    		return true
+				end
+		end,
+		function(context) -- What to do if listener fires.
+			cm:set_saved_value("liu_bei_lu_bu_death_blow", true)
+			core:remove_listener("dlc05_lu_bu_death_blow_monitor")
+		end,
+		true --Is persistent
+		)
+
+
+  remove_empress_effect_bundles(faction); -- empress is dead, doesn't matter if she likes/dislikes you any more
+    remove_empress_missions(faction); -- empress is dead, no point doing missions for her
+
+      return context:component_id() == "diplomacy_panel"
+	-- Listen for click on quick deal list.
+		core:add_listener(
+            self.current_state,
+			"ComponentLClickUp",
+            function(context) 
+                return context:is_child_of_component_id("quick_deals")
+            end,
+            function()
+                self:change_state( self.STATE_HIGHLIGHT_FACTION_LIST );
+                self:remove_quick_deal_list_highlight();
+            end,
+			true
+		);
+
+  "PanelOpenedCampaign",
+        function(context)
+            return context:component_id() == "diplomacy_panel"
+
+
+	"intervention_manager_startup",
+		"UICreated",
+		true,
+		function()
+			local turn_number_last_reset = cm:get_saved_value("intervention_system_last_advice_reset");
+	
+			if turn_number_last_reset then
+				self.intervention_system_last_advice_reset = turn_number_last_reset;
+			end;
+		end,
+		fa
+		
+		
+function help_page_manager:start_hyperlink_click_listener()
+	if self.hyperlink_click_listener_started then
+		return;
+	end;
+	
+	self.hyperlink_click_listener_started = true;
+	
+	core:add_listener(
+		"hyperlink_click_listener",
+		"ComponentLinkClicked",
+		true,
+		function(context)
+			self:check_hyperlink_click(context.string);
+		end,
+		true
+	);
+end;

@@ -1,0 +1,9 @@
+2018	3k_lua_yuanshu_helps_lubu_dilemma	FIRST	CAMPAIGN_PAYLOAD_RECORD	PAYLOAD[3k_main_campaign_payload_marry];CHARACTER;SOURCE_CHARACTER[target_character_2]	target_character_1
+2019	3k_lua_yuanshu_helps_lubu_dilemma	FIRST	TEXT_DISPLAY	LOOKUP[dummy_rendered_aid]	default
+2020	3k_lua_yuanshu_helps_lubu_dilemma	FIRST	LOCATED	CHARACTER	default
+2021	3k_lua_yuanshu_helps_lubu_dilemma	FIRST	TREASURY	AMOUNT[-500]	default
+
+
+
+
+ 
